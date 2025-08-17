@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+      body { 
+        font-family: 'Roboto', sans-serif;
+        background-color: #f0f4f8;
+        display: flex;
+        min-height: 100vh;
+        flex-direction: column;
+        line-height: 1.6;
+        color: #37474f;
+      }
+
+      .container { 
+        max-width: 1000px; 
+        margin: 40px auto;
+        padding: 40px;
+        background-color: #ffffff; 
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        flex: 1 0 auto;
+      }
+
+      h1 { 
+        color: #263238;
+        font-size: 3.0rem;
+        font-weight: 500;
+        margin-bottom: 30px;
+        border-bottom: 3px solid #007bff;
+        padding-bottom: 12px;
+        text-align: center;
+        letter-spacing: 0.05em;
+      }
+
+      h2 { 
+        color: #455a64;
+        font-size: 2.2rem;
+        font-weight: 400;
+        margin-top: 50px;
+        margin-bottom: 25px;
+        padding-top: 15px;
+        border-bottom: 1px solid #cfd8dc;
+        padding-bottom: 8px;
+      }
+
+      .form-card { 
+        padding: 30px;
+        background-color: #f8fbfc;
+        border-radius: 12px; 
+        margin-bottom: 40px; 
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        border: 1px solid #e0e6ed;
+      }
+
+      .input-field input[type="text"],
+      .input-field input[type="date"] {
+        border-bottom: 1px solid #90a4ae !important;
+        box-shadow: none !important;
+      }
+      .input-field label {
+        color: #78909c !important;
+      }
+      .input-field input[type="text"]:focus + label,
+      .input-field input[type="date"]:focus + label {
+        color: #007bff !important;
+      }
+      .input-field input[type="text"]:focus,
+      .input-field input[type="date"]:focus {
+        border-bottom: 2px solid #007bff !important;
+        box-shadow: 0 1px 0 0 #007bff !important;
+      }
+      .input-field .datepicker.active {
+        border-bottom: 2px solid #007bff !important;
+        box-shadow: 0 1px 0 0 #007bff !important;
+      }
+      #search-box {
+        margin-bottom: 25px;
+        padding-left: 10px;
+      }
+      #search-box + label {
+        left: 1rem !important;
+      }
+
+      .btn-add { 
+        background-color: #007bff;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        border-radius: 8px;
+        height: 52px;
+        line-height: 52px;
+        font-size: 1.1rem;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+      }
+      .btn-add:hover {
+        background-color: #0056b3 !important;
+        transform: translateY(-2px);
+      }
+      .btn-add:active {
+        transform: translateY(0);
+      }
+
+      .btn-update { 
+        background-color: #28a745;
+        margin-right: 10px;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+      }
+      .btn-update:hover {
+        background-color: #218838 !important;
+      }
+      .btn-delete { 
+        background-color: #dc3545;
+        border-radius: 6px;
+        transition: background-color 0.3s ease;
+      }
+      .btn-delete:hover {
+        background-color: #c82333 !important;
+      }
+      .btn-small { 
+        height: 36px;
+        line-height: 36px;
+        font-size: 0.85rem;
+        padding: 0 12px;
+      }
+
+      table { 
+        width: 100%; 
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 30px; 
+        background-color: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+      }
+      th, td { 
+        padding: 18px;
+        text-align: left; 
+        border-bottom: 1px solid #e0e0e0;
+        vertical-align: middle; 
+      }
+      th { 
+        background-color: #eff5fa;
+        font-weight: 500;
+        color: #546e7a;
+        border-bottom: 2px solid #cce5ff;
+      }
+      th.sortable { 
+        cursor: pointer; 
+        user-select: none; 
+        transition: background-color 0.2s ease;
+      } 
+      th.sortable:hover { 
+        background-color: #e5f2ff;
+      }
+      .sort-icon { 
+        vertical-align: middle; 
+        margin-left: 10px; 
+        font-size: 1.4em;
+        color: #78909c;
+      }
+      tbody tr:last-child td {
+        border-bottom: none;
+      }
+
+      .editable-input { 
+        width: calc(100% - 20px);
+        padding: 10px; 
+        border: 1px solid #cfd8dc;
+        border-radius: 6px; 
+        box-sizing: border-box; 
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background-color: #fdfdfd;
+      }
+      .editable-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        outline: none;
+      }
+
+      .completed-todo { 
+        text-decoration: line-through; 
+        color: #90a4ae;
+        font-style: italic; 
+        background-color: #f8fbfc;
+      }
+      .completed-todo .editable-input {
+        background-color: #f0f4f8;
+        border-color: #eceff1;
+        color: #b0bec5;
+      }
+
+      .modal {
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      }
+      .modal-content h4 {
+        margin-top: 15px;
+        color: #37474f;
+        font-size: 2rem;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #e0e6ed;
+      }
+      .modal-content p {
+        font-size: 1.1rem;
+        color: #546e7a;
+      }
+      .modal-footer {
+        padding: 20px 25px;
+        border-top: 1px solid #e0e6ed;
+      }
+      .modal-footer .btn-flat {
+        color: #007bff;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
+      }
+      .modal-footer .btn-flat:hover {
+        background-color: #e6f2ff;
+      }
+      .modal-footer #confirmDeleteBtn {
+        color: #dc3545;
+      }
+      .modal-footer #confirmDeleteBtn:hover {
+        background-color: #ffe6e8;
+      }
+      
+      @media (max-width: 992px) {
+        .container {
+          margin: 30px auto;
+          padding: 30px;
+        }
+        h1 {
+          font-size: 2.5rem;
+        }
+        h2 {
+          font-size: 2rem;
+        }
+        .btn-add {
+          height: 48px;
+          line-height: 48px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 20px;
+          padding: 20px;
+        }
+        h1 {
+          font-size: 2.2rem;
+          margin-bottom: 25px;
+        }
+        h2 {
+          font-size: 1.8rem;
+          margin-top: 40px;
+          margin-bottom: 20px;
+        }
+        .btn-add {
+          font-size: 1rem;
+          height: 45px;
+          line-height: 45px;
+        }
+        .btn-small {
+          font-size: 0.8rem;
+          padding: 0 10px;
+          height: 32px;
+          line-height: 32px;
+        }
+        th, td {
+          padding: 12px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Link Task</h1>
+
+      <div class="form-card">
+        <h2>新しいタスクを追加する</h2>
+        <form id="add-form" class="row">
+          <div class="input-field col s12 m4">
+            <input type="text" id="add-todo" class="validate" required>
+            <label for="add-todo">タスク内容</label>
+          </div>
+          <div class="input-field col s12 m4">
+            <input type="text" id="add-name" class="validate">
+            <label for="add-name">担当者名</label>
+          </div>
+          <div class="input-field col s12 m4">
+            <input type="text" id="add-date" class="datepicker"> <label for="add-date">期限 (YYYY-MM-DD)</label>
+          </div>
+          <div class="col s12">
+            <button type="submit" class="btn waves-effect waves-light btn-add">タスクを追加 <i class="material-icons right">send</i></button>
+          </div>
+        </form>
+      </div>
+
+      <h2>現在のタスクリスト</h2>
+      <div class="input-field">
+        <input type="text" id="search-box" onkeyup="filterTable()">
+        <label for="search-box">タスク内容や担当者名で検索...</label>
+      </div>
+      
+      <table id="todo-table" class="highlight responsive-table">
+        <thead>
+          <tr>
+            <th class="sortable" onclick="sortTable(1)">タスク内容 </th>
+            <th class="sortable" onclick="sortTable(2)">担当者 <i class="material-icons sort-icon">unfold_more</i></th>
+            <th class="sortable" onclick="sortTable(3)">期限 <i class="material-icons sort-icon">unfold_more</i></th>
+            <th>進捗状況</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div id="deleteConfirmModal" class="modal">
+      <div class="modal-content">
+        <h4>削除の確認</h4>
+        <p id="deleteMessage"></p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class="modal-close waves-effect waves-green btn-flat">キャンセル</a>
+        <a href="#!" id="confirmDeleteBtn" class="waves-effect waves-red btn-flat">削除</a>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+document.addEventListener("DOMContentLoaded", () => {
+    M.AutoInit(); 
+    
+    const datepickers = document.querySelectorAll('.datepicker');
+    M.Datepicker.init(datepickers, {
+        format: 'yyyy-mm-dd', // 日付フォーマット
+        autoClose: true,
+        i18n: {
+            cancel: 'キャンセル',
+            clear: 'クリア',
+            done: '選択',
+            months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+            weekdays: ['日', '月', '火', '水', '木', '金', '土'],
+            weekdaysShort: ['日', '月', '火', '水', '木', '金', '土'],
+            weekdaysAbbrev: ['日', '月', '火', '水', '木', '金', '土']
+        }
+    });
+    const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+    M.Modal.init(deleteConfirmModal);
+
+    loadToDos(); // 初期表示でToDoリストを読み込む
+});
+
+let currentToDoData = []; // ToDoデータを保持する変数
+let sortColumnIndex = -1; // 現在ソートされている列のインデックス
+let sortDirection = 'asc'; // 現在のソート方向
+
+function loadToDos() {
+    google.script.run
+        .withSuccessHandler(response => {
+            if (response.success) {
+                currentToDoData = response.data;
+                renderTable(currentToDoData);
+            } else {
+                M.toast({html: response.message, classes: 'red lighten-1'});
+                console.error("タスクリストのロードエラー:", response.message);
+                document.querySelector("#todo-table tbody").innerHTML = '<tr><td colspan="5" style="text-align:center; color: red;">' + response.message + '</td></tr>';
+            }
+        })
+        .withFailureHandler(onFailure)
+        .getToDos(); 
+}
+
+function renderTable(data) {
+    const tbody = document.querySelector("#todo-table tbody");
+    tbody.innerHTML = "";
+
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">ToDoがありません。</td></tr>';
+        return;
+    }
+
+    data.forEach(item => {
+        const row = tbody.insertRow();
+        row.dataset.id = item.id;
+        row.classList.toggle('completed-todo', item.status === '完了');
+        row.innerHTML = `
+            <td><input type="text" class="editable-input todo-content" value="${item.todo || ''}"></td>
+            <td><input type="text" class="editable-input name" value="${item.name || ''}"></td>
+            <td><input type="text" class="editable-input date datepicker-init" value="${item.date || ''}"></td> 
+            <td>
+                <div class="input-field" style="margin: 0;">
+                    <select class="status-select" onchange="handleStatusChange(this, '${item.id}')">
+                        <option value="未着手" ${item.status === '未着手' ? 'selected' : ''}>未着手</option>
+                        <option value="作業中" ${item.status === '作業中' ? 'selected' : ''}>作業中</option>
+                        <option value="完了" ${item.status === '完了' ? 'selected' : ''}>完了</option>
+                    </select>
+                </div>
+            </td>
+            <td>
+              <button class="btn-small waves-effect waves-light btn-update" onclick="handleUpdate(this, '${item.id}')">更新</button>
+              <button class="btn-small waves-effect waves-light btn-delete" onclick="handleDelete('${item.id}', '${item.todo}')">削除</button>
+            </td>
+        `;
+
+        const dateInput = row.querySelector('.datepicker-init');
+        if (dateInput) {
+            M.Datepicker.init(dateInput, {
+                format: 'yyyy-mm-dd',
+                autoClose: true,
+                i18n: {
+                    cancel: 'キャンセル', clear: 'クリア', done: '選択',
+                    months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                    weekdays: ['日', '月', '火', '水', '木', '金', '土'],
+                    weekdaysShort: ['日', '月', '火', '水', '木', '金', '土'],
+                    weekdaysAbbrev: ['日', '月', '火', '水', '木', '金', '土']
+                }
+            });
+        }
+        const selectElem = row.querySelector('.status-select');
+        M.FormSelect.init(selectElem);
+    });
+}
+
+document.getElementById("add-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const newToDo = {
+        todo: document.getElementById("add-todo").value,
+        name: document.getElementById("add-name").value,
+        date: document.getElementById("add-date").value 
+    };
+
+    if (newToDo.todo.trim() === '') {
+        M.toast({html: 'タスク内容は必須です！', classes: 'red lighten-1'});
+        return;
+    }
+
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .addTodo(newToDo);
+
+    e.target.reset(); 
+    M.updateTextFields(); 
+});
+
+function handleStatusChange(selectElement, id) {
+    const newStatus = selectElement.value;
+    const row = selectElement.closest('tr');
+    row.classList.toggle('completed-todo', newStatus === '完了');
+    
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .updateTodo({
+          id: id,
+          status: newStatus
+      });
+}
+
+function handleUpdate(buttonElement, id) {
+    const row = buttonElement.closest('tr');
+    const updatedToDo = {
+        id: id,
+        todo: row.querySelector('.todo-content').value,
+        name: row.querySelector('.name').value,
+        date: row.querySelector('.date').value,
+        status: row.querySelector('.status-select').value
+    };
+    
+    google.script.run
+      .withSuccessHandler(onSuccess)
+      .withFailureHandler(onFailure)
+      .updateTodo(updatedToDo);
+}
+
+function handleDelete(id, todoContent) {
+    const deleteMessage = document.getElementById('deleteMessage');
+    deleteMessage.textContent = `「${todoContent}」(ID: ${id}) を本当に削除しますか？`;
+
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    confirmDeleteBtn.onclick = null; 
+    confirmDeleteBtn.onclick = () => {
+        google.script.run
+            .withSuccessHandler(response => {
+                const rowToDelete = document.querySelector(`tr[data-id="${id}"]`);
+                if (rowToDelete) {
+                    rowToDelete.remove();
+                }
+                onSuccess(response);
+                return;
+            })
+            .withFailureHandler(onFailure)
+            .deleteTodo(id);
+
+        const modalInstance = M.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+        modalInstance.close(); 
+    };
+
+    const modalInstance = M.Modal.getInstance(document.getElementById('deleteConfirmModal'));
+    modalInstance.open(); 
+}
+
+function onSuccess(response) {
+    if (response && response.success) {
+        M.toast({html: response.message, classes: 'green lighten-1'}); 
+    } else if (response && !response.success) {
+        M.toast({html: response.message, classes: 'red lighten-1'}); 
+        console.error("Apps Scriptからのエラー応答:", response.message);
+    } else {
+        M.toast({html: '不明な処理結果が返されました。', classes: 'red lighten-1'});
+        console.error("不明な応答形式:", response);
+    }
+    loadToDos();
+    return;
+}
+
+function onFailure(error) {
+    console.error("Apps Script呼び出しエラー:", error); 
+    M.toast({html: 'サーバーとの通信で致命的なエラーが発生しました。コンソールを確認してください。', classes: 'red darken-3'});
+    loadToDos(); 
+}
+
+function filterTable() {
+    const filter = document.getElementById("search-box").value.toUpperCase();
+    const table = document.getElementById("todo-table");
+    const tr = table.getElementsByTagName("tr");
+    for (let i = 1; i < tr.length; i++) {
+        const todoContentInput = tr[i].querySelector('.todo-content');
+        const nameInput = tr[i].querySelector('.name');
+        
+        if (todoContentInput || nameInput) { 
+            const todoContentText = todoContentInput.value.toUpperCase();
+            const nameText = nameInput.value.toUpperCase();
+
+            if (todoContentText.indexOf(filter) > -1 || nameText.indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+function sortTable(columnIndex) {
+    const headers = document.querySelectorAll("#todo-table th.sortable");
+    const clickedHeader = headers[columnIndex - 1]; 
+
+    headers.forEach(h => {
+        const icon = h.querySelector('.sort-icon');
+        if (icon && h !== clickedHeader) {
+            icon.textContent = 'unfold_more';
+        }
+    });
+
+    if (sortColumnIndex === columnIndex) {
+        sortDirection = (sortDirection === 'asc') ? 'desc' : 'asc';
+    } else {
+        sortDirection = 'asc';
+        sortColumnIndex = columnIndex;
+    }
+
+    const currentIcon = clickedHeader.querySelector('.sort-icon');
+    if (currentIcon) {
+        currentIcon.textContent = (sortDirection === 'asc') ? 'arrow_drop_up' : 'arrow_drop_down';
+    }
+    
+    currentToDoData.sort((a, b) => {
+        let valA, valB;
+        let compareResult = 0;
+
+        switch(columnIndex) {
+            case 1: // タスク内容（五十音順）
+                valA = String(a.todo || '');
+                valB = String(b.todo || '');
+                compareResult = valA.localeCompare(valB, 'ja', { sensitivity: 'base' });
+                break;
+            case 2: // 担当者名（五十音順）
+                valA = String(a.name || '');
+                valB = String(b.name || '');
+                compareResult = valA.localeCompare(valB, 'ja', { sensitivity: 'base' });
+                break;
+            case 3: // 期限（日時順）
+                valA = a.date ? new Date(a.date + 'T00:00:00').getTime() : Infinity; 
+                valB = b.date ? new Date(b.date + 'T00:00:00').getTime() : Infinity;
+                compareResult = valA - valB;
+                break;
+            default:
+                return 0;
+        }
+
+        return sortDirection === 'asc' ? compareResult : -compareResult;
+    });
+
+    renderTable(currentToDoData);
+}
+    </script>
+  </body>
+</html>
